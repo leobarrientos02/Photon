@@ -13,65 +13,58 @@ form.addEventListener("submit", (e) => {
   e.preventDefault();
   searchPhotos(searchValue);
 });
-//updateInput()
+
+//updateInput() event listener is used to search for images
 function updateInput(e) {
   //console.log(e.target.value);
   searchValue = e.target.value;
-}
+} // Ends updateInput()
+
+// FetchAPI is used to not need to rewrite the same code over.
+async function fetchAPI(url) {
+  const dataFetch = await fetch(url, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: auth,
+    },
+  });
+  const data = await dataFetch.json();
+  return data;
+} // Ends fetchAPI()
+
+// generatePictures() is used to get the images from the API
+function generatePictures(data) {
+  //console.log(data); TEST
+
+  //Loop through photo object
+  data.photos.forEach((photo) => {
+    //console.log(photo); TEST
+    const galleryImg = document.createElement("div");
+    galleryImg.classList.add("gallery-img");
+    galleryImg.innerHTML = `<img src=${photo.src.large}></img>
+    <p id="photographer-id">Photographer:  <a href=${photo.photographer_url} target="_blank" rel="noopener noreferrer">  ${photo.photographer}</a></p>
+    `;
+    // Append galleryImg
+    gallery.appendChild(galleryImg);
+  });
+} //Ends generatePictures
 
 // curatedPhotos() get images from the API
 async function curatedPhotos() {
-  const dataFetch = await fetch(
-    "https://api.pexels.com/v1/curated?per_page=15&page=1",
-    {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        Authorization: auth,
-      },
-    }
+  const data = await fetchAPI(
+    "https://api.pexels.com/v1/curated?per_page=15&page=1"
   );
-  const data = await dataFetch.json();
-  //console.log(data);
-
-  //Loop through photo object
-  data.photos.forEach((photo) => {
-    console.log(photo);
-    const galleryImg = document.createElement("div");
-    galleryImg.classList.add("gallery-img");
-    galleryImg.innerHTML = `<img src=${photo.src.large}></img>
-    <p id="photographer-id">Photographer:  <a href=${photo.photographer_url} target="_blank" rel="noopener noreferrer">  ${photo.photographer}</a></p>
-    `;
-    // Append galleryImg
-    gallery.appendChild(galleryImg);
-  });
-}
+  generatePictures(data);
+} // Ends curatedPhotos()
 
 // SearchPhotos() is used to search photos from the API
 async function searchPhotos(query) {
-  const dataFetch = await fetch(
-    `https://api.pexels.com/v1/search?query=${query}+query&per_page=15&page=1`,
-    {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        Authorization: auth,
-      },
-    }
+  const data = await fetchAPI(
+    `https://api.pexels.com/v1/search?query=${query}+query&per_page=15&page=1`
   );
-  const data = await dataFetch.json();
-  //console.log(data);
+  generatePictures(data);
+} // Ends searchPhotos()
 
-  //Loop through photo object
-  data.photos.forEach((photo) => {
-    console.log(photo);
-    const galleryImg = document.createElement("div");
-    galleryImg.classList.add("gallery-img");
-    galleryImg.innerHTML = `<img src=${photo.src.large}></img>
-    <p id="photographer-id">Photographer:  <a href=${photo.photographer_url} target="_blank" rel="noopener noreferrer">  ${photo.photographer}</a></p>
-    `;
-    // Append galleryImg
-    gallery.appendChild(galleryImg);
-  });
-}
+// Function call
 curatedPhotos();
