@@ -35,20 +35,19 @@ async function fetchAPI(url) {
 
 // generatePictures() is used to get the images from the API
 function generatePictures(data) {
-  //console.log(data); TEST
-
-  //Loop through photo object
   data.photos.forEach((photo) => {
-    //console.log(photo); TEST
     const galleryImg = document.createElement("div");
     galleryImg.classList.add("gallery-img");
-    galleryImg.innerHTML = `<img src=${photo.src.large}></img>
-    <p id="photographer-id">Photographer:  <a href=${photo.photographer_url} target="_blank" rel="noopener noreferrer">  ${photo.photographer}</a></p>
-    `;
-    // Append galleryImg
+    galleryImg.innerHTML = `
+            <div class="gallery-info">
+            <a id="photographer" href=${photo.photographer_url} target="_blank" rel="noopener noreferrer">${photo.photographer}</a>
+            <a href=${photo.src.original} target="_blank" rel="noopener noreferrer">Download</a>
+            </div>
+            <img src=${photo.src.large}></img>
+            `;
     gallery.appendChild(galleryImg);
   });
-} //Ends generatePictures
+}
 
 // curatedPhotos() get images from the API
 async function curatedPhotos() {
@@ -58,8 +57,17 @@ async function curatedPhotos() {
   generatePictures(data);
 } // Ends curatedPhotos()
 
+// clear() is used to clear the screen from previous images
+function clear() {
+  gallery.innerHTML = "";
+  // resets the search bar
+  searchInput.value = "";
+} // ends clear()
+
 // SearchPhotos() is used to search photos from the API
 async function searchPhotos(query) {
+  // Call clear() first to clear old images
+  clear();
   const data = await fetchAPI(
     `https://api.pexels.com/v1/search?query=${query}+query&per_page=15&page=1`
   );

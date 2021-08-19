@@ -60,4 +60,25 @@ header h2 {
   color: white;
   cursor: pointer;
 }
+
+.gallery-info {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  color: gray;
+}
+
+.gallery-info a {
+  color: gray;
+}
+
+.gallery-info #photographer {
+  text-decoration: none;
+}
 /*# sourceMappingURL=styles.css.map */
