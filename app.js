@@ -4,6 +4,10 @@ const gallery = document.querySelector(".gallery");
 const searchInput = document.querySelector(".search-input");
 const form = document.querySelector(".search-form");
 let searchValue;
+const more = document.querySelector(".more");
+let page = 1;
+let fetchLink;
+let currentSearch;
 
 //Event Listeners
 searchInput.addEventListener("input", updateInput);
@@ -11,8 +15,13 @@ searchInput.addEventListener("input", updateInput);
 // Search event listeners
 form.addEventListener("submit", (e) => {
   e.preventDefault();
+  // Save the currentSearch into a variable
+  currentSearch = searchValue;
   searchPhotos(searchValue);
 });
+
+// More Event listners
+more.addEventListener("click", loadMore);
 
 //updateInput() event listener is used to search for images
 function updateInput(e) {
@@ -41,7 +50,7 @@ function generatePictures(data) {
     galleryImg.innerHTML = `
             <div class="gallery-info">
             <a id="photographer" href=${photo.photographer_url} target="_blank" rel="noopener noreferrer">${photo.photographer}</a>
-            <a href=${photo.src.original} target="_blank" rel="noopener noreferrer">Download</a>
+            <a href=${photo.src.original} target="_blank" rel="noopener noreferrer">View</a>
             </div>
             <img src=${photo.src.large}></img>
             `;
@@ -51,9 +60,8 @@ function generatePictures(data) {
 
 // curatedPhotos() get images from the API
 async function curatedPhotos() {
-  const data = await fetchAPI(
-    "https://api.pexels.com/v1/curated?per_page=15&page=1"
-  );
+  fetchLink = "https://api.pexels.com/v1/curated?per_page=15&page=1";
+  const data = await fetchAPI(fetchLink);
   generatePictures(data);
 } // Ends curatedPhotos()
 
@@ -68,11 +76,23 @@ function clear() {
 async function searchPhotos(query) {
   // Call clear() first to clear old images
   clear();
-  const data = await fetchAPI(
-    `https://api.pexels.com/v1/search?query=${query}+query&per_page=15&page=1`
-  );
+  fetchLink = `https://api.pexels.com/v1/search?query=${query}+query&per_page=15&page=1`;
+  const data = await fetchAPI(fetchLink);
   generatePictures(data);
 } // Ends searchPhotos()
+
+// loadMore() is used to load more pages
+async function loadMore() {
+  page++;
+  if (currentSearch) {
+    fetchLink = `https://api.pexels.com/v1/search?query=${currentSearch}+query&per_page=15&page=${page}`;
+  } else {
+    fetchLink = `https://api.pexels.com/v1/curated?per_page=15&page=${page}`;
+  }
+  // Get the photos again
+  const data = await fetchAPI(fetchLink);
+  generatePictures(data);
+} // ends loadMore()
 
 // Function call
 curatedPhotos();
